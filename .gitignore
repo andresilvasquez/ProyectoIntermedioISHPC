@@ -1,0 +1,16 @@
+# Ignorar archivos temporales de compilación
+*.o
+*.out
+*.x
+*.txt
+
+# Ignorar archivos de respaldo
+*~
+
+# Ignorar carpetas de configuración de editores
+.vscode/
+.idea/
+
+# Ignorar binarios
+build/
+bin/
