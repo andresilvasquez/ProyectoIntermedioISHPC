@@ -8,5 +8,7 @@ Para ver el archivo generado en el coverage, pongan en la terminal > firefox cov
 Verifiquen que en el compu esté instalado todo para que corra lcov, gcov, firefox, etc.
 
 Adicionalmente, make genera una estructura que incluye:
+
 -El directorio bin/, donde se almacenan los archivos objeto y el ejecutable percolacion.x
+
 -El directorio coverage/, que contiene el reporte HTML.
