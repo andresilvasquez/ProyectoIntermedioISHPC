@@ -1,16 +1,32 @@
-# Ignorar archivos temporales de compilación
+# Binarios y objetos
 *.o
-*.out
 *.x
-*.txt
+a.out
+bin/
 
-# Ignorar archivos de respaldo
+# Cobertura
+*.gcno
+*.gcda
+*.gcov
+*.info
+coverage/
+
+# Archivos temporales
 *~
 
-# Ignorar carpetas de configuración de editores
+# Configuración de editores
 .vscode/
 .idea/
+*.code-workspace
 
-# Ignorar binarios
-build/
-bin/
+# Archivos de sistema
+.DS_Store
+.directory
+Thumbs.db
+
+# Archivos personales
+*.txt
+
+# Variables de entorno (opcional)
+.env
+*.env
