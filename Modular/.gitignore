@@ -1,0 +1,32 @@
+# Binarios y objetos
+*.o
+*.x
+a.out
+bin/
+
+# Cobertura
+*.gcno
+*.gcda
+*.gcov
+*.info
+coverage/
+
+# Archivos temporales
+*~
+
+# Configuración de editores
+.vscode/
+.idea/
+*.code-workspace
+
+# Archivos de sistema
+.DS_Store
+.directory
+Thumbs.db
+
+# Archivos personales
+*.txt
+
+# Variables de entorno (opcional)
+.env
+*.env
