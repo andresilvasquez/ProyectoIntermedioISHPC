@@ -1,14 +1,23 @@
-Holi chiquibeibis, para correr el código desde la consola pongan > make run L=x P=y. 
-x, y son números cualquiera que quieran ingresar como argumentos.
-También pueden hacer > make clean
-                     > make coverage L=x P=y
+# Percolación — Instrucciones de uso
+Holi chiquibeibis, píllense unas breves instrucciones de uso, más organizaditas que las de la vez pasada.
 
-Para ver el archivo generado en el coverage, pongan en la terminal > firefox coverage/index.html
+Este proyecto incluye un Makefile que permite ejecutar distintas acciones desde la terminal. Puedes usar los siguientes comandos:
 
-Verifiquen que en el compu esté instalado todo para que corra lcov, gcov, firefox, etc.
+- make run L=x P=y: ejecuta el programa con los argumentos L y P que puedes ajustar como desees.
+- make coverage L=x P=y: genera un reporte de cobertura con los mismos argumentos.
+- make clean: elimina archivos generados automáticamente.
 
-Adicionalmente, make genera una estructura que incluye:
+Tengan en cuenta que x,y son números cualquiera que pueden poner para cada parámetro. Por ejemplo:
 
--El directorio bin/, donde se almacenan los archivos objeto y el ejecutable percolacion.x
+>make run L=12 P=0.6
+>make coverage L=12 P=0.6
+>make clean
 
--El directorio coverage/, que contiene el reporte HTML.
+Para visualizar el reporte de cobertura, abre el archivo coverage/index.html con firefox u otro navegador:
+
+>firefox coverage/index.html
+
+Adicionalmente, el Makefile organiza los archivos en dos directorios:
+
+- bin/: contiene los archivos objeto y el ejecutable percolacion.x.
+- coverage/: contiene el reporte HTML de cobertura.
