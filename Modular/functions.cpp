@@ -1,20 +1,15 @@
-#include <iostream>
-#include <vector>
-#include <random>
-#include <algorithm> // para std::max
+#include "functions.h"
 
 // Genera una malla 1D de LxL con valores aleatorios true/false según p
 std::vector<bool> generar_malla_1D(int L, double p) {
     int N = L * L;
     std::vector<bool> malla(N, false);
-
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0.0, 1.0);
 
-    for (int id = 0; id < N; ++id) {
+    for (int id = 0; id < N; ++id)
         malla[id] = (dist(gen) < p);
-    }
 
     return malla;
 }
@@ -31,12 +26,11 @@ int index(int i, int j, int L) {
     return i * L + j;
 }
 
-int dfs(int id, int L, int etiqueta,
-        const std::vector<bool> &malla,
-        std::vector<int> &etiquetas,
-        bool &toca_arriba, bool &toca_abajo,
-        bool &toca_izquierda, bool &toca_derecha)
-{
+static int dfs(int id, int L, int etiqueta,
+        const std::vector<bool>& malla,
+        std::vector<int>& etiquetas,
+        bool& toca_arriba, bool& toca_abajo,
+        bool& toca_izquierda, bool& toca_derecha) {
     if (id < 0 || id >= L*L) return 0;
     if (!malla[id] || etiquetas[id] != 0) return 0;
 
@@ -68,7 +62,7 @@ int dfs(int id, int L, int etiqueta,
     return tamano;
 }
 
-bool hay_cluster_percolante(const std::vector<bool> &malla, int L, int &tamano_max) {
+bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max) {
     int N = L * L;
     std::vector<int> etiquetas(N, 0);
     int etiqueta = 1;
@@ -84,7 +78,6 @@ bool hay_cluster_percolante(const std::vector<bool> &malla, int L, int &tamano_m
                              toca_arriba, toca_abajo,
                              toca_izquierda, toca_derecha);
 
-            // ✔️ Percola si hay conexión vertical O conexión horizontal
             if ((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)) {
                 percola = true;
                 tamano_max = std::max(tamano_max, tamano);
@@ -96,8 +89,7 @@ bool hay_cluster_percolante(const std::vector<bool> &malla, int L, int &tamano_m
     return percola;
 }
 
-// Función auxiliar para imprimir la malla (útil para pruebas)
-void imprimir_malla(const std::vector<bool> &malla, int L) {
+void imprimir_malla(const std::vector<bool>& malla, int L) {
     for (int i = 0; i < L; ++i) {
         for (int j = 0; j < L; ++j) {
             int id = index(i, j, L);
@@ -105,24 +97,4 @@ void imprimir_malla(const std::vector<bool> &malla, int L) {
         }
         std::cout << '\n';
     }
-}
-
-int main() {
-    int L = 10;            // Tamaño de la malla
-    double p = 0.6;        // Probabilidad de llenado
-
-    std::random_device rd;
-    std::mt19937 gen(rd());  // Generador aleatorio
-
-    std::vector<bool> malla = generar_malla_1D(L, p);  // usa versión 1D
-    imprimir_malla(malla, L);
-
-    int tamano_max;
-    bool percola = hay_cluster_percolante(malla, L, tamano_max);
-    std::cout << "¿Percola? " << (percola ? "Sí" : "No") << "\n";
-    if (percola) {
-        std::cout << "Tamaño del cluster percolante más grande: " << tamano_max << "\n";
-    }
-
-    return 0;
 }
