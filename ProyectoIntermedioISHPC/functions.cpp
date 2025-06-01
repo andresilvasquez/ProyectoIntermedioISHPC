@@ -26,6 +26,10 @@ int index(int i, int j, int L){
     return i * L + j;
 }
 
+bool pertenece(const std::vector<int>& percolantes , int etiqueta){
+    return std::find(percolantes.begin(), percolantes.end(), etiqueta) != percolantes.end();
+}
+
 // Funciona para detectar los clusters y etiquetarlos y determinar sus tamanos
 static int dfs(int id, int L, int etiqueta, 
     const std::vector<bool>& malla, 
@@ -89,6 +93,7 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
             if((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)){
                 percola = true;
                 tamano_max = std::max(tamano_max, tamano);
+                percolantes.push_back(etiqueta);
             }
             etiqueta++;
         }
@@ -103,7 +108,7 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
             // Detectar el cluster al que pertenece (todos sus elementos) y el tamano de este
             int tamano = dfs(id, L, etiqueta, malla, etiquetas, toca_arriba, toca_abajo, toca_izquierda, toca_derecha);
 
-            // Determinar si el cluster es percolante y de serlo revisar si su tamano es maximo a los clusters precios
+            // Determinar si el cluster es percolante y de serlo revisar si su tamano es maximo a los clusters previos
             if((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)){
                 percola = true;
                 tamano_max = std::max(tamano_max, tamano);
@@ -115,25 +120,21 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
     return percola;
 }
 
-void imprimir_malla(const std::vector<bool>& malla, int L){
-    for(int i = 0; i < L; ++i){
-        for(int j = 0; j < L; ++j){
-            int id = index(i, j, L);
-            std::cout << (malla[id] ? '#' : '.');
-        }
-        std::cout << "\n";
-    }
-}
-
-void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, int L){
+void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, const std::vector<int>& percolantes, int L){
     int id;
     std::ofstream malla_etiquetada("malla_etiquetada.txt");
     for(int i = 0; i < L; ++i){
         for(int j = 0; j < L; ++j){
             id = index(i, j, L);
-            if(etiquetas[id] == 0 && !malla[id]) malla_etiquetada << 0 << "\t";
-            if(etiquetas[id] == 0 && malla[id]) malla_etiquetada << 1 << "\t";
-            if(etiquetas[id] != 0) malla_etiquetada << etiquetas[id] << "\t";
+            if(!malla[id]){
+                malla_etiquetada << 0 << "\t";
+            }
+            else if(etiquetas[id] != 0 && pertenece(percolantes, etiquetas[id])){
+                malla_etiquetada << etiquetas[id] << "\t";
+            }
+            else{
+                malla_etiquetada << 1 << "\t";
+            }
         }
         malla_etiquetada << "\n";
     }

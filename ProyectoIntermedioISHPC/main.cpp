@@ -17,7 +17,12 @@ int main(int argc, char **argv){
         std::cout << "Tamaño del cluster percolante más grande: " << tamano_max << "\n";
     }
 
-    imprimir_clusters(etiquetas, malla, L);
+    for(int etiqueta : percolantes){
+        std::cout << etiqueta << " ";
+    }
+    std::cout << "\n";
+
+    imprimir_clusters(etiquetas, malla, percolantes, L);
 
     return 0;
 }

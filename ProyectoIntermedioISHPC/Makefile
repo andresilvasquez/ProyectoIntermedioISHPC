@@ -2,7 +2,7 @@ CXXFLAGS = -fsanitize=address,undefined,leak -fprofile-arcs -ftest-coverage
 
 simul:
 	g++ -O3 $(CXXFLAGS) main.cpp functions.cpp -o percolacion.x
-	./percolacion.x 4 0.6 10
+	./percolacion.x 100 0.6 10
 
 profile:
 
@@ -13,4 +13,4 @@ valgrind:
 
 
 clean:
-	rm -f *.x *.gcda *.gcno *.txt
+	rm -f *.x *.gcda *.gcno *.txt *.pdf
