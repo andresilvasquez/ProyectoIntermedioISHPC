@@ -77,12 +77,30 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
     tamano_max = 0;   
     bool percola = false;              // Variable boolena para registrar si el cluster percola o no
 
-    // Iterar sobre todos los elementos de la malla
-    for(int id = 0; id < N; ++id){
+    // Iterar sobre los elementos de la primera fila
+    for(int id = 0; id < L; ++id){
         if(malla[id] && etiquetas[id] == 0){  // Revisar si estan ocupados y si no pertenecen a algun cluster
             bool toca_arriba = false, toca_abajo = false;
             bool toca_izquierda = false, toca_derecha = false;
-            
+
+            // Detectar el cluster al que pertenece (todos sus elementos) y el tamano de este
+            int tamano = dfs(id, L, etiqueta, malla, etiquetas, toca_arriba, toca_abajo, toca_izquierda, toca_derecha);
+
+            // Determinar si el cluster es percolante y de serlo revisar si su tamano es maximo a los clusters precios
+            if((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)){
+                percola = true;
+                tamano_max = std::max(tamano_max, tamano);
+            }
+            etiqueta++;
+        }
+    }
+
+    // Iterar sobre los elementos de la primera columna
+    for(int id = 0; id < N; id += L){
+        if(malla[id] && etiquetas[id] == 0){  // Revisar si estan ocupados y si no pertenecen a algun cluster
+            bool toca_arriba = false, toca_abajo = false;
+            bool toca_izquierda = false, toca_derecha = false;
+
             // Detectar el cluster al que pertenece (todos sus elementos) y el tamano de este
             int tamano = dfs(id, L, etiqueta, malla, etiquetas, toca_arriba, toca_abajo, toca_izquierda, toca_derecha);
 
