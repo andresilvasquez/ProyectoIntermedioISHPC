@@ -13,4 +13,4 @@ valgrind:
 
 
 clean:
-	rm -f *.x *.gcda *.gcno
+	rm -f *.x *.gcda *.gcno *.txt

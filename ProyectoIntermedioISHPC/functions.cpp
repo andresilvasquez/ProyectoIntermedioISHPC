@@ -70,10 +70,9 @@ static int dfs(int id, int L, int etiqueta,
         return tamano;
     }
 
-bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max){
-    int N = L * L;
-    std::vector<int> etiquetas(N, 0);  // Vector correspondiente a la malla 1D con numeros que etiqueten los clusters
-    int etiqueta = 1;                  // Inicializar la etiqueta para el primer cluster
+bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max, std::vector<int>& etiquetas, std::vector<int>& percolantes){
+    int N = L * L; 
+    int etiqueta = 2;                  // Inicializar la etiqueta para el primer cluster
     tamano_max = 0;   
     bool percola = false;              // Variable boolena para registrar si el cluster percola o no
 
@@ -108,6 +107,7 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
             if((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)){
                 percola = true;
                 tamano_max = std::max(tamano_max, tamano);
+                percolantes.push_back(etiqueta);
             }
             etiqueta++;
         }
@@ -123,4 +123,20 @@ void imprimir_malla(const std::vector<bool>& malla, int L){
         }
         std::cout << "\n";
     }
+}
+
+void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, int L){
+    int id;
+    std::ofstream malla_etiquetada("malla_etiquetada.txt");
+    for(int i = 0; i < L; ++i){
+        for(int j = 0; j < L; ++j){
+            id = index(i, j, L);
+            if(etiquetas[id] == 0 && !malla[id]) malla_etiquetada << 0 << "\t";
+            if(etiquetas[id] == 0 && malla[id]) malla_etiquetada << 1 << "\t";
+            if(etiquetas[id] != 0) malla_etiquetada << etiquetas[id] << "\t";
+        }
+        malla_etiquetada << "\n";
+    }
+
+    malla_etiquetada.close();
 }
