@@ -3,11 +3,9 @@
 int main(int argc, char **argv){
     const int L = std::atoi(argv[1]);
     double p = std::atof(argv[2]);
+    int seed = std::atoi(argv[3]);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    std::vector<bool> malla = generar_malla_1D(L, p);
+    std::vector<bool> malla = generar_malla_1D(L, p, seed);
     imprimir_malla(malla, L);
 
     int tamano_max;

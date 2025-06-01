@@ -3,7 +3,7 @@
 #include <random>
 #include <algorithm>  // para std::max
 
-std::vector<bool> generar_malla_1D(int L, double p);
+std::vector<bool> generar_malla_1D(int L, double p, int seed);
 void imprimir_malla(const std::vector<bool>& malla, int L);
 
 int fila(int id, int L);

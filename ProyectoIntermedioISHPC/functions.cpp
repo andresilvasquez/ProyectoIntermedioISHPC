@@ -1,11 +1,11 @@
 #include "functions.h"
 
 // Genera una malla 1D de LxL con valores aleatorios booleanos segun la probabilidad p
-std::vector<bool> generar_malla_1D(int L, double p){
+std::vector<bool> generar_malla_1D(int L, double p, int seed){
     int N = L * L;
     std::vector<bool> malla(N, false);
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
+    std::mt19937 gen(seed);
     std::uniform_real_distribution<> dist(0.0,1.0);
 
     for(int id = 0; id < N; ++id){
