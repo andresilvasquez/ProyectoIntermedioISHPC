@@ -26,7 +26,7 @@ int index(int i, int j, int L){
     return i * L + j;
 }
 
-bool pertenece(const std::vector<int>& percolantes , int etiqueta){
+bool es_percolante(const std::vector<int>& percolantes , int etiqueta){
     return std::find(percolantes.begin(), percolantes.end(), etiqueta) != percolantes.end();
 }
 
@@ -129,7 +129,7 @@ void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool
             if(!malla[id]){
                 malla_etiquetada << 0 << "\t";
             }
-            else if(etiquetas[id] != 0 && pertenece(percolantes, etiquetas[id])){
+            else if(etiquetas[id] != 0 && es_percolante(percolantes, etiquetas[id])){
                 malla_etiquetada << etiquetas[id] << "\t";
             }
             else{

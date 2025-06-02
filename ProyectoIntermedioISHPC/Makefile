@@ -10,7 +10,5 @@ debug:
 
 valgrind:
 
-
-
 clean:
 	rm -f *.x *.gcda *.gcno *.txt *.pdf
