@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <random>
-#include <algorithm>  // para std::max
+#include <algorithm>  // Para std::max y std::find
 #include <fstream>  // Para escribir en .txt
 
 std::vector<bool> generar_malla_1D(int L, double p, int seed);

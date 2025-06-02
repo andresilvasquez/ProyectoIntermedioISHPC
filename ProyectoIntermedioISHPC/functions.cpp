@@ -27,7 +27,7 @@ int index(int i, int j, int L){
 }
 
 bool es_percolante(const std::vector<int>& percolantes , int etiqueta){
-    return std::find(percolantes.begin(), percolantes.end(), etiqueta) != percolantes.end();
+    return std::find(percolantes.begin(), percolantes.end(), etiqueta) != percolantes.end(); // true si la etiqueta se encuentra en el vector de percolantes
 }
 
 // Funciona para detectar los clusters y etiquetarlos y determinar sus tamanos
@@ -112,7 +112,7 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
             if((toca_arriba && toca_abajo) || (toca_izquierda && toca_derecha)){
                 percola = true;
                 tamano_max = std::max(tamano_max, tamano);
-                percolantes.push_back(etiqueta);
+                percolantes.push_back(etiqueta);  // Agregar la etiqueta al vector que almacena las etiquetas de los percolantes
             }
             etiqueta++;
         }
@@ -122,16 +122,19 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
 
 void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, const std::vector<int>& percolantes, int L){
     int id;
-    std::ofstream malla_etiquetada("malla_etiquetada.txt");
+    std::ofstream malla_etiquetada("malla_etiquetada.txt");  // Crear el objeto sobre el que se realizaran modificaciones para el .txt
     for(int i = 0; i < L; ++i){
         for(int j = 0; j < L; ++j){
             id = index(i, j, L);
+            // Si el elemento de la malla no esta ocupado, llenar con 0 la malla etiquetada
             if(!malla[id]){
                 malla_etiquetada << 0 << "\t";
             }
+            // Si el elemento de la malla pertenece a un cluster pero no es percolante, colocar 1 en la malla etiquetada
             else if(etiquetas[id] != 0 && es_percolante(percolantes, etiquetas[id])){
                 malla_etiquetada << etiquetas[id] << "\t";
             }
+            // Si el elemento de la malla pertenece a un cluster percolante, llenar con la etiqueta del cluster correspondiente
             else{
                 malla_etiquetada << 1 << "\t";
             }
@@ -139,5 +142,5 @@ void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool
         malla_etiquetada << "\n";
     }
 
-    malla_etiquetada.close();
+    malla_etiquetada.close();  // Cerrar el objeto del .txt
 }
