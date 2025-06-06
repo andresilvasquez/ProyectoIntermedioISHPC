@@ -13,7 +13,9 @@ int main(int argc, char **argv){
     int tamano_max;
     bool percola = hay_cluster_percolante(malla, L, tamano_max, etiquetas, percolantes);
 
+    std::cout << percola << "\t" << tamano_max << "\n";
 
+    /*
     std::cout << "Percola? " << (percola ? "Si" : "No") << "\n";
     if(percola){
         std::cout << "Tamaño del cluster percolante más grande: " << tamano_max << "\n";
@@ -24,6 +26,7 @@ int main(int argc, char **argv){
         std::cout << etiqueta << " ";
     }
     std::cout << "\n";
+    */
 
     imprimir_clusters(etiquetas, malla, percolantes, L);
 

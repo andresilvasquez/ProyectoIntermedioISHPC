@@ -9,11 +9,11 @@ percolacion.x : main.cpp functions.cpp
 resultados:
 	mkdir -p resultados
 
-parallel : percolacion.x resultados
-	parallel "./percolacion.x {1} {2} {3} > resultados/datos_{1}_{2}_{3}.txt" ::: $(L_valores) ::: $(p_valores) ::: $(semillas)
+ejecutar : percolacion.x resultados
+	parallel "./percolacion.x {1} {2} {3} >> resultados/datos_{1}_{2}.txt" ::: $(L_valores) ::: $(p_valores) ::: $(semillas)
 
 simul : percolacion.x
-	./percolacion.x 500 0.9 10
+	./percolacion.x 512 0.6 10
 
 profile:
 
