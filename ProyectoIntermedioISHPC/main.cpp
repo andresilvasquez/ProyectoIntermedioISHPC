@@ -12,10 +12,13 @@ int main(int argc, char **argv){
 
     int tamano_max;
     bool percola = hay_cluster_percolante(malla, L, tamano_max, etiquetas, percolantes);
+
+
     std::cout << "Percola? " << (percola ? "Si" : "No") << "\n";
     if(percola){
         std::cout << "Tamaño del cluster percolante más grande: " << tamano_max << "\n";
     }
+
 
     for(int etiqueta : percolantes){
         std::cout << etiqueta << " ";

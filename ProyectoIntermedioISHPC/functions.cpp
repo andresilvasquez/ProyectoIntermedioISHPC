@@ -120,6 +120,7 @@ bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_m
     return percola;
 }
 
+// Solo colorea los clusters percolantes, los otros clusters los etiqueta como 1 (blanco) y los no ocupados con 0 (negro)
 void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, const std::vector<int>& percolantes, int L){
     int id;
     std::ofstream malla_etiquetada("malla_etiquetada.txt");  // Crear el objeto sobre el que se realizaran modificaciones para el .txt

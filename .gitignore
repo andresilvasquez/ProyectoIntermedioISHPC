@@ -1,7 +1,8 @@
-./entorno_python/
 *.txt
 *.pdf
 *.x
 *.gcda
 *.gcno
 .vscode/
+CPP/
+ProyectoIntermedioISHPC/entorno_python
