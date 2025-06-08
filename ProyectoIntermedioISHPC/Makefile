@@ -24,7 +24,7 @@ analisis:
 	python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
 simul : percolacion.x
-	./percolacion.x 512 0.6 10
+	./percolacion.x 512 0.7 10
 
 test_functions.x: test_functions.o functions.o
 	g++ $(CXXFLAGS) $^ -o $@ -l Catch2Main -l Catch2

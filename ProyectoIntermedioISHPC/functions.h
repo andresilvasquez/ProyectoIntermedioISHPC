@@ -7,6 +7,7 @@
 #include <ctime>
 #include <chrono>
 
+
 std::vector<bool> generar_malla_1D(int L, double p, int seed);
 void imprimir_malla(const std::vector<bool>& malla, int L);
 void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool>& malla, const std::vector<int>& percolantes, int L);
