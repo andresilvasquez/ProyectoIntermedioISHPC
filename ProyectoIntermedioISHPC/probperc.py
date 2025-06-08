@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import sys
 
 sns.set()
 sns.set_context("paper")
@@ -25,12 +26,12 @@ def sumatoria(datos, columna):
         return np.nan
     
 def main():
-    L = np.array([32, 64, 128, 256, 512])
-    P = np.array([0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 
-         0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 
-         0.65, 0.7, 0.73, 0.76, 0.79, 0.82, 0.85, 0.88, 0.91, 0.94, 0.97])
-    
-    OPT = ["O0", "O1", "O2", "O3", "Ofast"]
+    L_entrada = sys.argv[1].split()
+    p_entrada = sys.argv[2].split()
+    OPT = sys.argv[3].split()
+
+    L = np.array([int(i) for i in L_entrada])
+    P = np.array([float(i) for i in p_entrada])
 
     fig1, ax1 = plt.subplots(figsize=(10,5))
     fig2, ax2 = plt.subplots(figsize=(10,5))

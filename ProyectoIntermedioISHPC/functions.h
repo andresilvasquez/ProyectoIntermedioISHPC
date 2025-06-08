@@ -3,8 +3,9 @@
 #include <random>
 #include <algorithm>  // Para std::max y std::find
 #include <fstream>  // Para escribir en .txt
-#include <chrono>
+#include <stack>  // Hace a dfs iterativo, elimina riesgo de desbordamiento
 #include <ctime>
+#include <chrono>
 
 std::vector<bool> generar_malla_1D(int L, double p, int seed);
 void imprimir_malla(const std::vector<bool>& malla, int L);
