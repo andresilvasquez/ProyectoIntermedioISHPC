@@ -4,6 +4,8 @@ int main(int argc, char **argv){
     const int L = std::atoi(argv[1]);
     double p = std::atof(argv[2]);
     int seed = std::atoi(argv[3]);
+    auto wstart{std::chrono::steady_clock::now()};   // Wall time
+    std::clock_t cstart = std::clock();              // CPU time
 
     std::vector<bool> malla = generar_malla_1D(L, p, seed);
 
@@ -13,20 +15,14 @@ int main(int argc, char **argv){
     int tamano_max;
     bool percola = hay_cluster_percolante(malla, L, tamano_max, etiquetas, percolantes);
 
-    std::cout << percola << "\t" << tamano_max << "\n";
+    auto wend{std::chrono::steady_clock::now()};
+    std::clock_t cend = std::clock();
 
-    /*
-    std::cout << "Percola? " << (percola ? "Si" : "No") << "\n";
-    if(percola){
-        std::cout << "Tamaño del cluster percolante más grande: " << tamano_max << "\n";
-    }
+    std::chrono::duration<double> elapsed{wend - wstart};
+    double wduration = elapsed.count();
+    double cduration = cend - cstart;
 
-
-    for(int etiqueta : percolantes){
-        std::cout << etiqueta << " ";
-    }
-    std::cout << "\n";
-    */
+    std::cout << percola << "\t" << tamano_max << "\t" << wduration << "\t" << cduration << "\n";
 
     imprimir_clusters(etiquetas, malla, percolantes, L);
 
