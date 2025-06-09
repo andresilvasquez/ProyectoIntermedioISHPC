@@ -34,50 +34,45 @@ bool es_percolante(const std::vector<int>& percolantes , int etiqueta){
 static int dfs(int id, int L, int etiqueta, 
     const std::vector<bool>& malla, 
     std::vector<int>& etiquetas, bool& toca_arriba, 
-    bool& toca_abajo, bool& toca_izquierda, bool& toca_derecha)
-{
-    if (id < 0 || id >= L * L) return 0;
-    if (!malla[id] || etiquetas[id] != 0) return 0;
+    bool& toca_abajo, bool& toca_izquierda, bool& toca_derecha){
+        if(id < 0 || id >= L * L) return 0;              // Controlar si el id de un elemento esta por fuera del rango
+        if(!malla[id] || etiquetas[id] != 0) return 0;   // Si el elemento de la malla no esta ocupado (falso) o si ya pertenece a algun cluster
 
-    std::stack<int> pila;
-    pila.push(id);
-    etiquetas[id] = etiqueta;
+        // Si no pertenece a algun cluster, asignarle un numero e inicializar su tamano en 1
+        etiquetas[id] = etiqueta;
+        int tamano = 1;
 
-    int tamano = 0;
+        // Obtener la fila y columna del elemento dado su id en la malla 1D
+        int i = fila(id, L);
+        int j = columna(id, L);
 
-    const int dx[4] = {-1, 1, 0, 0};
-    const int dy[4] = {0, 0, -1, 1};
+        // Verificar si el elemento toca alguna frontera de la malla
+        if(i == 0) toca_arriba = true;
+        if(i == L - 1) toca_abajo = true;
+        if(j == 0) toca_izquierda = true;
+        if(j == L - 1) toca_derecha = true;
+        
+        // Definir las direcciones vecinas (Izquierda, Derecha, Abajo, Arriba)
+        const int dx[4] = {-1, 1, 0, 0};
+        const int dy[4] = {0, 0, -1, 1};
 
-    while (!pila.empty()) {
-        int actual = pila.top();
-        pila.pop();
-
-        int i = fila(actual, L);
-        int j = columna(actual, L);
-
-        tamano++;
-
-        if (i == 0) toca_arriba = true;
-        if (i == L - 1) toca_abajo = true;
-        if (j == 0) toca_izquierda = true;
-        if (j == L - 1) toca_derecha = true;
-
-        for (int dir = 0; dir < 4; ++dir) {
+        // Revisar los vecinos
+        for(int dir = 0; dir < 4; ++dir){
+            // Definir las coordenadas del vecino (fila y columna)
             int ni = i + dx[dir];
             int nj = j + dy[dir];
+            
+            // Verificar si el vecino esta en el rango de la malla
+            if(ni >= 0 && ni < L && nj >= 0 && nj < L){
+                int nid = index(ni, nj, L);  // id del elemento en la malla 1D
 
-            if (ni >= 0 && ni < L && nj >= 0 && nj < L) {
-                int nid = index(ni, nj, L);
-                if (malla[nid] && etiquetas[nid] == 0) {
-                    etiquetas[nid] = etiqueta;
-                    pila.push(nid);
-                }
+                // Anadir recursivamente el tamano del cluster del vecino
+                tamano += dfs(nid, L, etiqueta, malla, etiquetas, toca_arriba, toca_abajo, toca_izquierda, toca_derecha);
             }
         }
-    }
 
-    return tamano;
-}
+        return tamano;
+    }
 
 bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max, std::vector<int>& etiquetas, std::vector<int>& percolantes){
     int N = L * L; 
