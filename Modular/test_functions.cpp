@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>  
+#include "catch2/catch_test_macros.hpp" //spack load catch2
 #include "functions.h"
 
 TEST_CASE("Malla de solo ceros no percola") {
