@@ -23,8 +23,9 @@ ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 analisis:
 	python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
-simul : percolacion.x
-	./percolacion.x 512 0.7 10
+simul : percolacion_O3.x
+	./percolacion_O3.x 4 0.6 10
+	python3 clusters.py
 
 test_functions.x: test_functions.o functions.o
 	g++ $(CXXFLAGS) $^ -o $@ -l Catch2Main -l Catch2
@@ -49,3 +50,6 @@ valgrind:
 clean:
 	rm -f *.x *.gcda *.gcno *.txt *.pdf
 	rm -r resultados
+
+
+
