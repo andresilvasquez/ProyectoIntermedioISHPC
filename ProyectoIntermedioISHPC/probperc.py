@@ -61,8 +61,8 @@ def main():
                 ct += np.sum(datos[:, 3])
             WT[j] = wt
             CT[j] = ct
-        ax3.plot(L, WT, label=f"Wall time - {o}", color=colors[i], marker='o', ls='--')
-        ax3.plot(L, CT, label=f"CPU time - {o}", color=colors[i], marker='o')
+        ax3.plot(L, WT, label=f"Wall time - {o}", color=colors[i], marker='o', ls='--', mec='black')
+        ax3.plot(L, CT, label=f"CPU time - {o}", color=colors[i], marker='o', mec='black')
 
     # Configuracion de las graficas
     ax1.set_xlabel(r"Probabilidad de ocupacion $p$")

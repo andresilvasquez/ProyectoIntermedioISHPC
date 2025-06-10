@@ -4,6 +4,7 @@ int main(int argc, char **argv){
     const int L = std::atoi(argv[1]);
     double p = std::atof(argv[2]);
     int seed = std::atoi(argv[3]);
+    bool imprimir = std::atoi(argv[4]);
     auto wstart{std::chrono::steady_clock::now()};   // Wall time
     std::clock_t cstart = std::clock();              // CPU time
 
@@ -24,7 +25,9 @@ int main(int argc, char **argv){
 
     std::cout << percola << "\t" << tamano_max << "\t" << wduration << "\t" << cduration << "\n";
 
-    imprimir_clusters(etiquetas, malla, percolantes, L);
-
+    if(imprimir){
+        imprimir_clusters(etiquetas, malla, percolantes, L);
+    }
+    
     return 0;
 }
