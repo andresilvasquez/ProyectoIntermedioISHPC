@@ -93,7 +93,16 @@ profile: percolacion_pg.x #revisar si puede poner solo las funciones de interés
 
 	@echo "Wrote flat profile and flamegraph to profiling/analysis.txt and profiling/flamegraph.svg"
 
+report:
+	mkdir -p latex_output
+	cp report.bib latex_output/
+	cd latex_output/
+	pdflatex -interaction=batchmode ../reporte2.tex
+	bibtex reporte2
+	pdflatex -interaction=batchmode ../reporte2.tex
+	cd ../
+
 clean:
 	rm -f *.x *.gcda *.gcno *.txt *.pdf gmon.out perf.data* *.svg *.gcov *.html *.css
-	rm -rf resultados profiling
+	rm -rf resultados profiling latex_output
 	rm -rf $(BIN_DIR)
