@@ -1,0 +1,103 @@
+\documentclass[12pt,a4paper,twoside]{tau-book}
+\usepackage[spanish]{babel}
+\usepackage{tau}
+\usepackage{authblk}
+
+
+%----------------------------------------------------------
+% Title
+%----------------------------------------------------------
+
+\title{Proyecto Intermedio}
+
+%----------------------------------------------------------
+% Authors, affiliations and professor
+%----------------------------------------------------------
+
+\author[1]{\large Milena Barrios Gallego}
+\author[2]{\large Juan Manuel Segura}
+\author[3]{\large Andrés Silva Vásquez}
+
+%----------------------------------------------------------
+
+\affil[1]{\normalsize Departamento de Física, Universidad Nacional de Colombia}
+
+
+\professor{\normalsize Introducción a la Computación Científica y de Alto Rendimiento}
+
+%----------------------------------------------------------
+% Footpage notes
+%----------------------------------------------------------
+
+\institution{Universidad Nacional de Colombia}
+\ftitle{Proyecto Intermedio}
+\theday{Junio 11, 2025} % \today
+\course{Introducción a la Computación Científica y de Alto Rendimiento}
+
+%----------------------------------------------------------
+% Abstract
+%----------------------------------------------------------
+
+\theabstract{
+
+}
+
+%----------------------------------------------------------
+\keywords{}
+
+%----------------------------------------------------------
+
+\begin{document}
+	
+    \maketitle
+    \abscontent
+    % \tableofcontents  % Uncomment to activate the table of contents
+    \thispagestyle{firststyle}
+
+%----------------------------------------------------------
+% The document begins
+%----------------------------------------------------------
+
+\section{Introducción}
+
+El fenómeno de percolación es un modelo fundamental en física estadística y teoría de redes, con aplicaciones que abarcan desde la propagación de incendios forestales y epidemias hasta la conductividad de materiales porosos. En su forma más simple, el modelo de percolación representa un sistema en el cual cada sitio (o enlace) de una red es ocupado con cierta probabilidad $p$, y se estudia la formación de caminos conectados a través del sistema.
+
+En este trabajo se considera el modelo de percolación por sitio en una malla bidimensional cuadrada de tamaño $L \times L$, donde cada celda se ocupa de forma independiente con probabilidad $p$. Dos celdas ocupadas se consideran conectadas si son vecinas en la dirección de von Neumann (norte, sur, este u oeste). A partir de estas conexiones se forman clusters o componentes conexas de celdas ocupadas.
+
+Un aspecto central del modelo es la transición de fase que ocurre en el límite termodinámico ($L \to \infty$): existe un valor crítico de $p$, denotado $p_c$, por debajo del cual la probabilidad de que exista un cluster que atraviese el sistema es prácticamente nula, y por encima del cual la percolación ocurre casi con certeza. En este proyecto, se estudian dos aspectos fundamentales del comportamiento del sistema en función de $p$ y del tamaño $L$:
+
+\begin{enumerate}
+    \item Probabilidad de percolación: se estima la fracción de configuraciones en las que existe un cluster que conecta lados opuestos de la malla, ya sea en dirección vertical (de arriba a abajo) o horizontal (de izquierda a derecha).
+    \item Tamaño promedio del cluster más grande: se calcula el tamaño del mayor cluster en cada realización y se promedia sobre múltiples configuraciones.
+\end{enumerate}
+
+Dado el carácter probabilístico del modelo, las simulaciones se repiten ?? para cada valor de $p$, con el fin de obtener estimaciones precisas de las cantidades de interés. A partir de estas repeticiones se calculan también las desviaciones estándar, lo que permite evaluar la estabilidad y confiabilidad de los resultados.
+
+Desde el punto de vista computacional, el código fue implementado en C++ con una estructura modular. Se utilizó un Makefile para automatizar diversas tareas del proyecto, incluyendo:
+\begin{itemize}
+    \item la compilación y ejecución de simulaciones (\texttt{simul}),
+    \item la verificación de componentes críticos del programa mediante pruebas unitarias (\texttt{test}), que garantizan el funcionamiento correcto de funciones como el mapeo de índices o la detección de clusters,
+    \item la creación de este reporte en pdf (\texttt{report})
+    \item la creación de un flat profile del código para la probabilidad crítica (\texttt{profile}), que revela las funciones más costosas computacionalmente y es útil para evaluar posibles optimizaciones,
+    \item y la depuración del código con herramientas como \texttt{gdb} (\texttt{debug}) y \texttt{valgrind} (\texttt{valgrind}).
+\end{itemize}
+
+
+\section{Metodología}
+
+
+\section{Resultados}
+
+
+\section{Conclusiones}
+
+
+
+%----------------------------------------------------------
+
+\printbibliography
+
+\appendix
+%----------------------------------------------------------\textbf{}
+
+\end{document}
