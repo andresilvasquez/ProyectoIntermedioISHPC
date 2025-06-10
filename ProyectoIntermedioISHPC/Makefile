@@ -1,9 +1,8 @@
 CXX = g++
-CXXFLAGS = -fsanitize=address,undefined,leak -fprofile-arcs -ftest-coverage
+CXXFLAGS = -std=c++17 -fsanitize=address,undefined,leak 
+COVERAGE = -g --coverage -fprofile-arcs -ftest-coverage
 DEBUGFLAGS = -g -ggdb -O0 
 VALGRINDFLAGS = -g -O1
-COVERAGEFLAGS = -g -coverage -fprofile-arcs -ftest-coverage
-FLAME = $(HOME)/Downloads/FlameGraph
 
 L_valores = 32 64 128 256 512
 p_valores = 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.56 0.57 0.58 0.59 0.6 0.61 0.62 0.63 0.64 0.65 0.7 0.73 0.76 0.79 0.82 0.85 0.88 0.91 0.94 0.97
@@ -12,33 +11,35 @@ OPTIMIZERS = O0 O1 O2 O3 Ofast
 
 BIN_DIR = bin
 OPT_DIR = $(BIN_DIR)/opt
-SRC     = main.cpp functions.cpp
-OBJS    = $(SRC:%.cpp=$(BIN_DIR)/%.o)
+DIRS = $(BIN_DIR) $(OPT_DIR) profiling latex_output
+SRC = main.cpp functions.cpp
+OBJS = $(SRC:%.cpp=$(BIN_DIR)/%.o)
 
-all: $(BIN_DIR)/percolacion.x
+# Mensaje de uso de los argumentos
+usage:
+	@echo "Uso de ARGS: <L> <p> <seed> <¿Quiere imprimir malla?->1=sí,0=no)>"
+	@echo "Ejemplo: make profile ARGS=\"512 0.7 10 1\""
 
-$(BIN_DIR):
-	@mkdir -p $@
+#Crea las carpetas
+$(DIRS):
+	mkdir -p $@
 
-$(OPT_DIR):
-	@mkdir -p $@
-
+#Archivos objeto
 $(BIN_DIR)/%.o: %.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+#Ejecutables sin optimización
 $(BIN_DIR)/percolacion.x: $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@
 
-percolacion_%.x : main.cpp functions.cpp | $(OPT_DIR)
-	$(CXX) -$* $(CXXFLAGS) $^ -o $(OPT_DIR)/percolacion_$*.x
-
-$(BIN_DIR)/test_functions.o : test_functions.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+#Ejecutables con optimización
+$(OPT_DIR)/percolacion_%.x: $(OBJS) | $(OPT_DIR)
+	$(CXX) -$* $(CXXFLAGS) $(COVERAGE) $^ -o $@
 
 resultados:
 	mkdir -p resultados
 
-ejecutar_%: percolacion_%.x resultados
+ejecutar_%: $(OPT_DIR)/percolacion_%.x resultados
 	/usr/bin/time parallel "$(OPT_DIR)/percolacion_$*.x {1} {2} {3} 0 >> resultados/datos_{1}_{2}_$*.txt" ::: $(L_valores) ::: $(p_valores) ::: $(semillas)
 
 ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
@@ -46,58 +47,96 @@ ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 analisis: ejecutar
 	python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
+#Simulación. Ingresar los args desde línea de comandos
 simul : $(BIN_DIR)/percolacion.x
-	./$< 512 0.7 10 1
+ifndef ARGS
+	$(MAKE) usage
+	@exit 1
+endif
+	./$< $(ARGS)
 
-test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o #spack load catch2
-	$(CXX) $^ -o $@  -l Catch2Main -l Catch2
+#Test y cobertura. Ingresar los args desde línea de comandos
+$(BIN_DIR)/functions.o: functions.cpp | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@
+
+$(BIN_DIR)/test_functions.o: test_functions.cpp | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@
+
+#Antes:
+#test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o #spack load catch2
+#	$(CXX) $^ -o $@  -l Catch2Main -l Catch2
+#
+#test: test_functions.x
+#	./$<
+#
+#coverage: test_functions.x #firefox coverage.html
+#	./test_functions.x
+#	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
+#	gcovr --html-details coverage.html
+#	@echo "Open coverage/index.html en el navegador"
+
+
+SHELL = /bin/bash
+
+test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o
+	@bash -lc "spack load catch2 && \
+	 $(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@ -lCatch2Main -lCatch2"
 
 test: test_functions.x
-	./$<
+	./$< 
 
-coverage: test_functions.x #firefox coverage.html
-	./test_functions.x
+coverage: test #firefox coverage.html
 	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
 	gcovr --html-details coverage.html
 	@echo "Open coverage/index.html en el navegador"
 
+#Debug y Valgrind falta ver si sí sirve lo de catch2
+
 debug: 
-	g++ $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
+	$(CXX) $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
 	gdb ./percolacion_debug.x
 
-valgrind:
-	g++ $(VALGRINDFLAGS) main.cpp functions.cpp -o percolacion_val.x
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes ./percolacion_val.x 512 0.7 10
+valgrind: 
+ifndef ARGS
+	$(MAKE) usage
+	@exit 1
+endif
+	$(CXX) $(VALGRINDFLAGS) main.cpp functions.cpp -o percolacion_val.x
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes \
+	    ./percolacion_val.x $(ARGS)
 
-percolacion_pg.x: main.cpp functions_dfsviejo.cpp
-	$(CXX) $(CXXFLAGS) -O0 -pg -g -fno-inline $^ -o $@ 
+#Binarioss con profiling para cada versión de la función
+percolacion_pg_functions.x: main.cpp functions.cpp #función nueva (recorre primera fila y columna)
+	@$(CXX) $(CXXFLAGS) -O0 -pg -g -fno-inline $^ -o $@
 
+percolacion_pg_functions_1.x: main.cpp functions_1.cpp #función original (recorre toda la malla)
+	@$(CXX) $(CXXFLAGS) -O0 -pg -g -fno-inline $^ -o $@
 
 #flat-profile crítico -> profiling-report.txt (L=128, pc \approx 0.59271)
-profiling-report.txt: percolacion_pg.x
+#Con estos flat profiles se pueden comparar cambios entre ambas versiones
+profiling-report-%.txt: percolacion_pg_%.x
 	@mkdir -p profiling
-	# graba un perfil estadístico en UNA pasada
-	perf record -g --output=profiling/perf.data \
-	            ./percolacion_pg.x 128 0.59271 10
-	# vuelca un flat profile en texto
-	perf report --stdio --input=profiling/perf.data > profiling-report.txt
+	@perf record -g --output=profiling/$*.perf.data ./percolacion_pg_$*.x 128 0.59271 10 0
+	@perf report --stdio --input=profiling/$*.perf.data > $@
 
-profile: percolacion_pg.x #revisar si puede poner solo las funciones de interés
+profile: percolacion_pg_functions.x #Falta arreglar y cambiarlo por gprof
+ifndef ARGS
+	@$(MAKE) usage
+	@exit 1
+endif
 	@mkdir -p profiling
-	./percolacion_pg.x 1000 0.5 10 
-	gprof percolacion_pg.x gmon.out | grep -v 'std::\|__gnu_cxx\|operator\|std::chrono\|std::__' > profiling/analysis.txt
-
-	perf record --call-graph dwarf -F99 -g -- ./percolacion_pg.x 1000 0.5 10
-	perf script | $(FLAME)/stackcollapse-perf.pl > profiling/out.folded
-	$(FLAME)/flamegraph.pl profiling/out.folded > profiling/flamegraph.svg
-
-	@echo "Wrote flat profile and flamegraph to profiling/analysis.txt and profiling/flamegraph.svg"
+	@./$< $(ARGS)
+	@#Flat profile
+	@gprof percolacion_pg_functions.x gmon.out | grep -v 'std::\|__gnu_cxx\|operator\|std::chrono\|std::__' > profiling/function_flat.txt
+	@#Granular profile
+	@perf record -g -F99 --call-graph dwarf --output=profiling/functions.perf.data ./$< $(ARGS)
+	@perf report --stdio --input=profiling/functions.perf.data > profiling/function_report.txt
+	@echo "Wrote flat profile to profiling/function_flat.txt and granular to profiling/function_report.txt" 
 
 report:
 	latexmk -pdf reporte.tex
 	rm -f reporteNotes.bib *.aux *.bbl *.blg *.fdb* *.fls *.log *.synctex.gz *.out 
 
 clean:
-	rm -f *.x *.gcda *.gcno *.txt *.pdf gmon.out perf.data* *.svg *.gcov *.html *.css 
-	rm -rf resultados profiling
-	rm -rf $(BIN_DIR)
+	rm -f *.o *.x *.gcda *.gcno *.txt *.pdf gmon.out perf.data* *.svg *.gcov *.html *.css 
+	rm -rf $(BIN_DIR) resultados profiling 

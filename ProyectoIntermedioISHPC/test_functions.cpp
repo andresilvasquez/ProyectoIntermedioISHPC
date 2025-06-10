@@ -1,6 +1,5 @@
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch_test_macros.hpp"
-
 #include "functions.h"
 
 TEST_CASE("Malla de solo ceros no percola") {
