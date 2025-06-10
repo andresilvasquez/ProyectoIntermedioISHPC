@@ -28,20 +28,21 @@ def main():
     colors = sns.color_palette("colorblind", n_colors=len(L))
 
     # Crear los objetos de figuras
-    fig1, ax1 = plt.subplots(figsize=(10,5))    # Figura para la probabilidad de cluster percolante
-    fig2, ax2 = plt.subplots(figsize=(10,5))    # Figura para Tamaño maximo promedio
-    fig3, ax3 = plt.subplots(figsize=(10,5))    # Figura para tiempos computacionales
+    fig1, ax1 = plt.subplots(figsize=(8,6))    # Figura para la probabilidad de cluster percolante
+    fig2, ax2 = plt.subplots(figsize=(8,6))    # Figura para Tamaño maximo promedio
+    fig3, ax3 = plt.subplots(figsize=(8,6))    # Figura para tiempos computacionales
 
     # Iterar sobre los tamaños de matriz y las probabilidades de ocupacion para optmizer O3 (Figuras 1 y 2)
     for j, l in enumerate(L):
         prob = np.zeros(len(P))
+        desv = np.zeros(len(P))
         tam = np.zeros(len(P))
         desvtam = np.zeros(len(P))
         for i, p in enumerate(P):
             datos = np.loadtxt(f"./resultados/datos_{l}_{p}_O3.txt")
-            prob[i], _ = prom_desv(datos[:,0])
+            prob[i], desv[i] = prom_desv(datos[:,0])
             tam[i], desvtam[i] = prom_desv(datos[datos[:, 1] > 0, 1])
-        ax1.plot(P, prob, label=f"L = {l}")
+        ax1.errorbar(P, prob, yerr= desv, label=f"L = {l}", capsize = 3, fmt = '--o', ms=5, color=colors[j], mec='black')
         ax2.errorbar(P, tam / (l * l), yerr=desvtam / (l * l), label=f"L = {l}", capsize = 3, fmt = '--o', ms=5, color=colors[j], mec='black')
 
     # Lista de colores para la figura 3
