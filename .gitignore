@@ -4,11 +4,6 @@
 *.gcda
 *.gcno
 .vscode/
-*.tex
-*.cls
-*.bib
-*.cls
-*.sty
 *.gz
 *.aux
 *.bbl
