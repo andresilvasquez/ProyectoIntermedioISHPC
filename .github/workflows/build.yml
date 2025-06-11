@@ -1,29 +1,23 @@
-name: Build and Upload Executables
+name: C++ CI
 
-on:
-  push:
-    branches: [grafica_clusters]
-  pull_request:
-    branches: [grafica_clusters]
+on: [push, pull_request]
 
 jobs:
-  build-and-upload:
+  build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ProyectoIntermedioISHPC
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install build tools
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential
+          sudo apt-get install -y g++ make catch2
 
-      - name: Build binaries
-        run: make -C ProyectoIntermedioISHPC -j
-
-      - name: Upload executables
-        uses: actions/upload-artifact@v4
-        with:
-          name: executables
-          path: ProyectoIntermedioISHPC/bin/*.x
+      - name: Build & test
+        run: make test
