@@ -142,7 +142,7 @@ endif
 	@echo "Wrote profile report made with gprof to profiling/gprof.txt"
 	@echo "Wrote profile report made with perf to profiling/perf.txt"
 
-reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf reporte.tex reporte.bib
+reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf
 	latexmk -pdf reporte.tex
 	rm -f reporteNotes.bib *.aux *.bbl *.blg *.fdb* *.fls *.log *.synctex.gz *.out 
 
