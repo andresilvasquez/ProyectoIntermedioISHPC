@@ -32,5 +32,5 @@ jobs:
         with:
           name: executables
           path: |
-            ProyectoIntermedioISHPC/bin/percolacion.x
-            ProyectoIntermedioISHPC/bin/test_functions.x
+            **/bin/percolacion.x
+            **/bin/test_functions.x
