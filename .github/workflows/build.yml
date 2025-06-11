@@ -1,5 +1,4 @@
-# .github/workflows/ci.yml
-name: C++ CI Pipeline
+name: Minimal C++ CI
 
 on:
   push:
@@ -8,7 +7,7 @@ on:
     branches: [ grafica_clusters ]
 
 jobs:
-  build-test-profile:
+  build-and-profile:
     runs-on: ubuntu-latest
 
     defaults:
@@ -16,50 +15,27 @@ jobs:
         working-directory: ProyectoIntermedioISHPC
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            catch2 \
-            valgrind \
-            lcov \
-            binutils \
-            linux-tools-common linux-tools-$(uname -r)
+          sudo apt-get install -y build-essential binutils linux-tools-common linux-tools-$(uname -r)
 
-      - name: Build all binaries
-        run: |
-          make clean
-          make -j
+      - name: Build
+        run: make -j
 
-      # Unit tests step omitted
-
-      - name: Generate flat profiling report for functions.cpp
+      - name: Generate profile for functions.cpp
         run: make profiling-report.txt
 
-      - name: Generate flat profiling report for functions_1.cpp
+      - name: Generate profile for functions_1.cpp
         run: make profiling-report_1.txt
 
-      - name: Generate full profile (gprof + perf)
-        run: make profile ARGS="128 0.59271 10 0"
-
-      - name: Upload profiling reports
+      - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
           name: profiling-reports
           path: |
             profiling-report.txt
             profiling-report_1.txt
-            profiling/gprof.txt
-            profiling/perf.txt
-
-      - name: Upload test executables
-        uses: actions/upload-artifact@v4
-        with:
-          name: executables
-          path: |
-            bin/percolacion.x
-            bin/test_functions.x
