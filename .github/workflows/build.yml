@@ -15,7 +15,7 @@ jobs:
         working-directory: ProyectoIntermedioISHPC
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install build tools
