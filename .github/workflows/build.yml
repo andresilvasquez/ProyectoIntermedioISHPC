@@ -1,0 +1,55 @@
+name: C++ CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-profile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential catch2 valgrind gprof binutils perf
+
+      - name: Build all binaries
+        run: |
+          make clean
+          make -j
+
+      - name: Run unit tests
+        run: make test
+
+      - name: Generate flat profiling report for functions.cpp
+        run: make profiling-report.txt
+
+      - name: Generate flat profiling report for functions_1.cpp
+        run: make profiling-report_1.txt
+
+      - name: Generate full profile (gprof + perf)
+        run: make profile ARGS="128 0.59271 10 0"
+
+      - name: Upload profiling reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: profiling-reports
+          path: |
+            profiling-report.txt
+            profiling-report_1.txt
+            profiling/gprof.txt
+            profiling/perf.txt
+
+      - name: Upload test executables
+        uses: actions/upload-artifact@v3
+        with:
+          name: executables
+          path: |
+            bin/percolacion.x
+            bin/test_functions.x
