@@ -1,19 +1,14 @@
-# .github/workflows/ci.yml
-name: Minimal C++ CI
+name: Build and Upload Executables
 
 on:
   push:
-    branches: [ grafica_clusters ]
+    branches: [grafica_clusters]
   pull_request:
-    branches: [ grafica_clusters ]
+    branches: [grafica_clusters]
 
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ProyectoIntermedioISHPC
 
     steps:
       - name: Checkout repository
@@ -22,16 +17,13 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential binutils \
-                                  linux-tools-common linux-tools-$(uname -r)
+          sudo apt-get install -y build-essential
 
       - name: Build binaries
-        run: make -j
+        run: make -C ProyectoIntermedioISHPC -j
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
           name: executables
-          path: |
-            ProyectoIntermedioISHPC/ProyectoIntermedioISHPC/bin/percolacion.x
-            ProyectoIntermedioISHPC/ProyectoIntermedioISHPC/bin/test_functions.x
+          path: ProyectoIntermedioISHPC/bin/*.x
