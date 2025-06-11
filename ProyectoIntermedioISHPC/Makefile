@@ -45,7 +45,7 @@ ejecutar_%: $(OPT_DIR)/percolacion_%.x resultados
 ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 
 analisis:
-	@echo "Corriendo análisis (asegúrate de haber ejecutado 'make ejecutar' antes)..."
+	@echo "Hacer make ejecutar antes"
 	@python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
 #Simulación. Ingresar los args desde línea de comandos
