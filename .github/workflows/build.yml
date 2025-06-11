@@ -21,7 +21,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential valgrind lcov binutils \
+          sudo apt-get install -y build-essential catch2 valgrind lcov binutils \
                                   linux-tools-common linux-tools-$(uname -r)
 
       - name: Build all binaries
@@ -30,13 +30,7 @@ jobs:
           make -j
 
       - name: Run unit tests
-        shell: bash
-        run: |
-          git clone https://github.com/spack/spack.git $HOME/spack
-          source $HOME/spack/share/spack/setup-env.sh
-          spack install catch2
-          spack load catch2
-          make test
+        run: make test
 
       - name: Generate flat profiling report for functions.cpp
         run: make profiling-report.txt
