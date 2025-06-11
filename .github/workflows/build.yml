@@ -15,26 +15,32 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install system dependencies
+        working-directory: ProyectoIntermedioISHPC
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential catch2 valgrind lcov binutils \
                                   linux-tools-common linux-tools-$(uname -r)
 
       - name: Build all binaries
+        working-directory: ProyectoIntermedioISHPC
         run: |
           make clean
           make -j
 
       - name: Run unit tests
+        working-directory: ProyectoIntermedioISHPC
         run: make test
 
       - name: Generate flat profiling report for functions.cpp
+        working-directory: ProyectoIntermedioISHPC
         run: make profiling-report.txt
 
       - name: Generate flat profiling report for functions_1.cpp
+        working-directory: ProyectoIntermedioISHPC
         run: make profiling-report_1.txt
 
       - name: Generate full profile (gprof + perf)
+        working-directory: ProyectoIntermedioISHPC
         run: make profile ARGS="128 0.59271 10 0"
 
       - name: Upload profiling reports
@@ -42,15 +48,15 @@ jobs:
         with:
           name: profiling-reports
           path: |
-            profiling-report.txt
-            profiling-report_1.txt
-            profiling/gprof.txt
-            profiling/perf.txt
+            ProyectoIntermedioISHPC/profiling-report.txt
+            ProyectoIntermedioISHPC/profiling-report_1.txt
+            ProyectoIntermedioISHPC/profiling/gprof.txt
+            ProyectoIntermedioISHPC/profiling/perf.txt
 
       - name: Upload test executables
         uses: actions/upload-artifact@v4
         with:
           name: executables
           path: |
-            bin/percolacion.x
-            bin/test_functions.x
+            ProyectoIntermedioISHPC/bin/percolacion.x
+            ProyectoIntermedioISHPC/bin/test_functions.x
