@@ -18,79 +18,62 @@ OBJS = $(SRC:%.cpp=$(BIN_DIR)/%.o)
 # Mensaje de uso de los argumentos
 usage:
 	@echo "Uso de ARGS: <L> <p> <seed> <¿Quiere imprimir malla?->1=sí,0=no)>"
-	@echo "Ejemplo: make profile ARGS=\"512 0.7 10 1\""
+	@echo "Ejemplo: make profile ARGS=\"1000 0.7 10 1\""
 
 #Crea las carpetas
 $(DIRS):
-	mkdir -p $@
+	@mkdir -p $@
 
 #Archivos objeto
 $(BIN_DIR)/%.o: %.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 #Ejecutables sin optimización
 $(BIN_DIR)/percolacion.x: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@
+	@$(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@
 
 #Ejecutables con optimización
 $(OPT_DIR)/percolacion_%.x: $(OBJS) | $(OPT_DIR)
-	$(CXX) -$* $(CXXFLAGS) $(COVERAGE) $^ -o $@
+	@$(CXX) -$* $(CXXFLAGS) $(COVERAGE) $^ -o $@
 
 resultados:
-	mkdir -p resultados
+	@mkdir -p resultados
 
 ejecutar_%: $(OPT_DIR)/percolacion_%.x resultados
-	/usr/bin/time parallel "$(OPT_DIR)/percolacion_$*.x {1} {2} {3} 0 >> resultados/datos_{1}_{2}_$*.txt" ::: $(L_valores) ::: $(p_valores) ::: $(semillas)
+	@/usr/bin/time parallel "$(OPT_DIR)/percolacion_$*.x {1} {2} {3} 0 >> resultados/datos_{1}_{2}_$*.txt" ::: $(L_valores) ::: $(p_valores) ::: $(semillas)
 
 ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 
 analisis: ejecutar
-	python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
+	@python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
 #Simulación. Ingresar los args desde línea de comandos
 simul : $(BIN_DIR)/percolacion.x
 ifndef ARGS
-	$(MAKE) usage
+	@$(MAKE) usage
 	@exit 1
 endif
-	./$< $(ARGS)
+	@./$< $(ARGS)
 
-#Test y cobertura. Ingresar los args desde línea de comandos
+#Test 
 $(BIN_DIR)/functions.o: functions.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@
 
 $(BIN_DIR)/test_functions.o: test_functions.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@
+	@bash -c "spack load catch2 > /dev/null 2>&1 && \
+	  $(CXX) $(CXXFLAGS) $(COVERAGE) -c $< -o $@"
 
-#Antes:
-#test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o #spack load catch2
-#	$(CXX) $^ -o $@  -l Catch2Main -l Catch2
-#
-#test: test_functions.x
-#	./$<
-#
-#coverage: test_functions.x #firefox coverage.html
-#	./test_functions.x
+test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o
+	@bash -c "spack load catch2 > /dev/null 2>&1 && \
+	  $(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@ -lCatch2Main -lCatch2"
+
+test: test_functions.x
+	@./$< 
+
+#coverage: test #firefox coverage.html
 #	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
 #	gcovr --html-details coverage.html
 #	@echo "Open coverage/index.html en el navegador"
-
-
-SHELL = /bin/bash
-
-test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o
-	@bash -lc "spack load catch2 && \
-	 $(CXX) $(CXXFLAGS) $(COVERAGE) $^ -o $@ -lCatch2Main -lCatch2"
-
-test: test_functions.x
-	./$< 
-
-coverage: test #firefox coverage.html
-	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
-	gcovr --html-details coverage.html
-	@echo "Open coverage/index.html en el navegador"
-
-#Debug y Valgrind falta ver si sí sirve lo de catch2
 
 debug: 
 	$(CXX) $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
@@ -112,31 +95,50 @@ percolacion_pg_functions.x: main.cpp functions.cpp #función nueva (recorre prim
 percolacion_pg_functions_1.x: main.cpp functions_1.cpp #función original (recorre toda la malla)
 	@$(CXX) $(CXXFLAGS) -O0 -pg -g -fno-inline $^ -o $@
 
+####
 #flat-profile crítico -> profiling-report.txt (L=128, pc \approx 0.59271)
 #Con estos flat profiles se pueden comparar cambios entre ambas versiones
-profiling-report-%.txt: percolacion_pg_%.x
+
+# Flat‐profile para functions.cpp → profiling-report.txt
+profiling-report.txt: percolacion_pg_functions.x
 	@mkdir -p profiling
-	@perf record -g --output=profiling/$*.perf.data ./percolacion_pg_$*.x 128 0.59271 10 0
-	@perf report --stdio --input=profiling/$*.perf.data > $@
+	@perf record -g --output=profiling/functions.perf.data \
+	    ./percolacion_pg_functions.x 128 0.59271 10 0
+	@perf report --stdio --input=profiling/functions.perf.data \
+	    > profiling-report.txt
+	@echo "Wrote flat profile report to profiling-report.txt"
+
+# Flat‐profile para functions_1.cpp → profiling-report_1.txt
+profiling-report_1.txt: percolacion_pg_functions_1.x
+	@mkdir -p profiling
+	@perf record -g --output=profiling/functions_1.perf.data \
+	    ./percolacion_pg_functions_1.x 128 0.59271 10 0
+	@perf report --stdio --input=profiling/functions_1.perf.data \
+	    > profiling-report_1.txt
+	@echo "Wrote flat profile report to profiling-report_1.txt"
+
+####
 
 profile: percolacion_pg_functions.x #Falta arreglar y cambiarlo por gprof
 ifndef ARGS
 	@$(MAKE) usage
-	@exit 1
+	@exit 11	
 endif
 	@mkdir -p profiling
 	@./$< $(ARGS)
-	@#Flat profile
-	@gprof percolacion_pg_functions.x gmon.out | grep -v 'std::\|__gnu_cxx\|operator\|std::chrono\|std::__' > profiling/function_flat.txt
-	@#Granular profile
+	@#Profiling con gprof
+	@gprof percolacion_pg_functions.x gmon.out > profiling/gprof.txt
+	@#Profiling con perf
 	@perf record -g -F99 --call-graph dwarf --output=profiling/functions.perf.data ./$< $(ARGS)
-	@perf report --stdio --input=profiling/functions.perf.data > profiling/function_report.txt
-	@echo "Wrote flat profile to profiling/function_flat.txt and granular to profiling/function_report.txt" 
+	@perf report --stdio --input=profiling/functions.perf.data > profiling/perf.txt
+	@echo "Wrote profile report made with gprof to profiling/gprof.txt"
+	@echo "Wrote profile report made with perf to profiling/perf.txt"
 
 report:
 	latexmk -pdf reporte.tex
 	rm -f reporteNotes.bib *.aux *.bbl *.blg *.fdb* *.fls *.log *.synctex.gz *.out 
 
-clean:
-	rm -f *.o *.x *.gcda *.gcno *.txt *.pdf gmon.out perf.data* *.svg *.gcov *.html *.css 
-	rm -rf $(BIN_DIR) resultados profiling 
+clean:      #el @find ... evita borrar el profiling-report.txt, pero borra el resto de .txtc
+	@find . -maxdepth 1 -type f -name '*.txt' ! -name 'profiling-report.txt' -delete
+	rm -f *.x *.gcda *.gcno *.pdf *.gcov *.html *.css gmon.out perf.data* *.svg
+	rm -rf $(BIN_DIR) resultados profiling latex_output
