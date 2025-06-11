@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: C++ CI Pipeline
 
 on:
@@ -10,6 +11,10 @@ jobs:
   build-test-profile:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ProyectoIntermedioISHPC
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -18,39 +23,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential valgrind lcov binutils \
-                                  linux-tools-common linux-tools-$(uname -r)
-
-      - name: Bootstrap Spack
-        run: |
-          git clone https://github.com/spack/spack.git $HOME/spack
-
-      - name: Configure Spack in environment
-        run: echo "source \$HOME/spack/share/spack/setup-env.sh" >> $GITHUB_ENV
-
-      - name: Install Catch2 via Spack
-        run: |
-          bash -lc "spack install catch2"
+                                  linux-tools-common linux-tools-$(uname -r) \
+                                  catch2
 
       - name: Build all binaries
-        working-directory: ProyectoIntermedioISHPC
         run: |
           make clean
           make -j
 
       - name: Run unit tests
-        working-directory: ProyectoIntermedioISHPC
         run: make test
 
       - name: Generate flat profiling report for functions.cpp
-        working-directory: ProyectoIntermedioISHPC
         run: make profiling-report.txt
 
       - name: Generate flat profiling report for functions_1.cpp
-        working-directory: ProyectoIntermedioISHPC
         run: make profiling-report_1.txt
 
       - name: Generate full profile (gprof + perf)
-        working-directory: ProyectoIntermedioISHPC
         run: make profile ARGS="128 0.59271 10 0"
 
       - name: Upload profiling reports
@@ -58,15 +48,15 @@ jobs:
         with:
           name: profiling-reports
           path: |
-            ProyectoIntermedioISHPC/profiling-report.txt
-            ProyectoIntermedioISHPC/profiling-report_1.txt
-            ProyectoIntermedioISHPC/profiling/gprof.txt
-            ProyectoIntermedioISHPC/profiling/perf.txt
+            profiling-report.txt
+            profiling-report_1.txt
+            profiling/gprof.txt
+            profiling/perf.txt
 
       - name: Upload test executables
         uses: actions/upload-artifact@v4
         with:
           name: executables
           path: |
-            ProyectoIntermedioISHPC/bin/percolacion.x
-            ProyectoIntermedioISHPC/bin/test_functions.x
+            bin/percolacion.x
+            bin/test_functions.x
