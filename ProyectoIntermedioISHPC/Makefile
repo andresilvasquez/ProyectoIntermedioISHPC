@@ -73,10 +73,10 @@ test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o
 test: test_functions.x
 	@./$< 
 
-coverage: test #firefox coverage.html
-	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
-	gcovr --html-details coverage.html
-	@echo "Open coverage/index.html en el navegador"
+coverage: test_functions.x
+	./test_functions.x
+	gcovr --html --html-details -o coverage.html
+    firefox coverage.html
 
 debug: 
 	$(CXX) $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
@@ -136,11 +136,6 @@ endif
 	@perf report --stdio --input=profiling/functions.perf.data > profiling/perf.txt
 	@echo "Wrote profile report made with gprof to profiling/gprof.txt"
 	@echo "Wrote profile report made with perf to profiling/perf.txt"
-
-coverage: test_functions.x
-	./test_functions.x
-	gcovr --html --html-details -o coverage.html
-        firefox coverage.html
 
 reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf
 	latexmk -pdf reporte.tex
