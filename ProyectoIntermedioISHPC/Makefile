@@ -122,7 +122,7 @@ profiling-report_1.txt: percolacion_pg_functions_1.x
 profile: percolacion_pg_functions.x #Falta arreglar y cambiarlo por gprof
 ifndef ARGS
 	@$(MAKE) usage
-	@exit 11	
+	@exit 1	
 endif
 	@mkdir -p profiling
 	@./$< $(ARGS)
