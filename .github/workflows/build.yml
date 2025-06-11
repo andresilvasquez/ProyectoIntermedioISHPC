@@ -15,11 +15,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install system dependencies
-        working-directory: ProyectoIntermedioISHPC
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential catch2 valgrind lcov binutils \
+          sudo apt-get install -y build-essential valgrind lcov binutils \
                                   linux-tools-common linux-tools-$(uname -r)
+
+      - name: Bootstrap Spack
+        run: |
+          git clone https://github.com/spack/spack.git $HOME/spack
+
+      - name: Configure Spack in environment
+        run: echo "source \$HOME/spack/share/spack/setup-env.sh" >> $GITHUB_ENV
+
+      - name: Install Catch2 via Spack
+        run: |
+          bash -lc "spack install catch2"
 
       - name: Build all binaries
         working-directory: ProyectoIntermedioISHPC
