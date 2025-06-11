@@ -75,6 +75,7 @@ static int dfs(int id, int L, int etiqueta,
             }
         }
     }
+    return tamano;
 }
 
 bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max, std::vector<int>& etiquetas, std::vector<int>& percolantes){

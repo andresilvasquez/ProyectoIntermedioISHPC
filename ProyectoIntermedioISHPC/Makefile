@@ -50,16 +50,18 @@ ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf:
 
 analisis : ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf
 
-#Simulación. Ingresar los args desde línea de comandos
-malla.pdf : $(BIN_DIR)/percolacion.x
+simul: 
 ifndef ARGS
-	@$(MAKE) usage
+	$(MAKE) usage
 	@exit 1
 endif
-	@./$< $(ARGS)
+	@./$(BIN_DIR)/percolacion.x $(ARGS)
 	@python3 clusters.py
+	@touch malla.pdf
 
-simul : malla.pdf
+malla.pdf: $(BIN_DIR)/percolacion.x
+	@./$< $(ARGS)
+	python3 clusters.py
 
 #Test 
 $(BIN_DIR)/functions.o: functions.cpp | $(BIN_DIR)
@@ -140,7 +142,7 @@ endif
 	@echo "Wrote profile report made with gprof to profiling/gprof.txt"
 	@echo "Wrote profile report made with perf to profiling/perf.txt"
 
-reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf
+reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf reporte.tex reporte.bib
 	latexmk -pdf reporte.tex
 	rm -f reporteNotes.bib *.aux *.bbl *.blg *.fdb* *.fls *.log *.synctex.gz *.out 
 
