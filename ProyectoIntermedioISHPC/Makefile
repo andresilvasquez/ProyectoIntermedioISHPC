@@ -51,12 +51,14 @@ ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf:
 analisis : ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf
 
 #Simulación. Ingresar los args desde línea de comandos
-simul : $(BIN_DIR)/percolacion.x
+malla.pdf : $(BIN_DIR)/percolacion.x
 ifndef ARGS
 	@$(MAKE) usage
 	@exit 1
 endif
 	@./$< $(ARGS)
+
+simul : malla.pdf
 
 #Test 
 $(BIN_DIR)/functions.o: functions.cpp | $(BIN_DIR)
