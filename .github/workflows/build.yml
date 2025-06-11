@@ -37,7 +37,7 @@ jobs:
         run: make profile ARGS="128 0.59271 10 0"
 
       - name: Upload profiling reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: profiling-reports
           path: |
