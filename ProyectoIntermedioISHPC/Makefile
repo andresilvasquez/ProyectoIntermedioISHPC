@@ -17,7 +17,7 @@ OBJS = $(SRC:%.cpp=$(BIN_DIR)/%.o)
 
 # Mensaje de uso de los argumentos
 usage:
-	@echo "Uso de ARGS: <L> <p> <seed> <¿Quiere imprimir malla?->1=sí,0=no)>"
+	@echo "Uso de ARGS: <L> <p> <seed> <¿Quiere imprimir malla?->(1=sí,0=no)>"
 	@echo "Ejemplo: make profile ARGS=\"1000 0.7 10 1\""
 
 #Crea las carpetas
@@ -44,7 +44,8 @@ ejecutar_%: $(OPT_DIR)/percolacion_%.x resultados
 
 ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 
-analisis: ejecutar
+analisis:
+	@echo "Corriendo análisis (asegúrate de haber ejecutado 'make ejecutar' antes)..."
 	@python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
 
 #Simulación. Ingresar los args desde línea de comandos
@@ -70,10 +71,10 @@ test_functions.x: $(BIN_DIR)/test_functions.o $(BIN_DIR)/functions.o
 test: test_functions.x
 	@./$< 
 
-#coverage: test #firefox coverage.html
-#	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
-#	gcovr --html-details coverage.html
-#	@echo "Open coverage/index.html en el navegador"
+coverage: test #firefox coverage.html
+	gcov -o $(BIN_DIR) functions.cpp test_functions.cpp
+	gcovr --html-details coverage.html
+	@echo "Open coverage/index.html en el navegador"
 
 debug: 
 	$(CXX) $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
