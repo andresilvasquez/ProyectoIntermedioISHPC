@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: Minimal C++ CI
 
 on:
@@ -7,7 +8,7 @@ on:
     branches: [ grafica_clusters ]
 
 jobs:
-  build-and-profile:
+  build-and-upload:
     runs-on: ubuntu-latest
 
     defaults:
@@ -18,24 +19,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential binutils linux-tools-common linux-tools-$(uname -r)
+          sudo apt-get install -y build-essential
 
-      - name: Build
+      - name: Build binaries
         run: make -j
 
-      - name: Generate profile for functions.cpp
-        run: make profiling-report.txt
-
-      - name: Generate profile for functions_1.cpp
-        run: make profiling-report_1.txt
-
-      - name: Upload reports
+      - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
-          name: profiling-reports
+          name: executables
           path: |
-            profiling-report.txt
-            profiling-report_1.txt
+            bin/percolacion.x
+            bin/test_functions.x
