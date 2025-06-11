@@ -19,5 +19,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y g++ make catch2
 
+      - name: Stub spack command
+        run: |
+          mkdir -p $HOME/bin
+          cat > $HOME/bin/spack << 'EOF'
+          #!/usr/bin/env bash
+          # no-op stub so “spack load” always succeeds
+          exit 0
+          EOF
+          chmod +x $HOME/bin/spack
+          echo "$HOME/bin" >> $GITHUB_PATH
+
       - name: Build & test
         run: make test
