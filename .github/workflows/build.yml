@@ -2,9 +2,9 @@ name: C++ CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ grafica_clusters ]
   pull_request:
-    branches: [ main ]
+    branches: [ grafica_clusters ]
 
 jobs:
   build-test-profile:
