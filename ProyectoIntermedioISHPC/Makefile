@@ -57,6 +57,7 @@ ifndef ARGS
 	@exit 1
 endif
 	@./$< $(ARGS)
+	@python3 clusters.py
 
 simul : malla.pdf
 
@@ -76,9 +77,9 @@ test: test_functions.x
 	@./$< 
 
 coverage: test_functions.x
-	./test_functions.x
-	gcovr --html --html-details -o coverage.html
-    firefox coverage.html
+	./$<
+	@gcovr --html --html-details -o coverage.html
+	@echo "Coverage report generated at -> firefox coverage.html"
 
 debug: 
 	$(CXX) $(DEBUGFLAGS) main.cpp functions.cpp -o percolacion_debug.x
