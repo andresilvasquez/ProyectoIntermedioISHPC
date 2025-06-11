@@ -44,9 +44,11 @@ ejecutar_%: $(OPT_DIR)/percolacion_%.x resultados
 
 ejecutar: $(foreach opt,$(OPTIMIZERS),ejecutar_$(opt))
 
-analisis:
+ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf:
 	@echo "Hacer make ejecutar antes"
 	@python3 probperc.py "$(L_valores)" "$(p_valores)" "$(OPTIMIZERS)"
+
+analisis : ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf
 
 #Simulación. Ingresar los args desde línea de comandos
 simul : $(BIN_DIR)/percolacion.x
@@ -135,9 +137,16 @@ endif
 	@echo "Wrote profile report made with gprof to profiling/gprof.txt"
 	@echo "Wrote profile report made with perf to profiling/perf.txt"
 
-report:
+coverage: test_functions.x
+	./test_functions.x
+	gcovr --html --html-details -o coverage.html
+        firefox coverage.html
+
+reporte.pdf: ProbabilidadCluster.pdf TamanoCluster.pdf Tiempos.pdf malla.pdf
 	latexmk -pdf reporte.tex
 	rm -f reporteNotes.bib *.aux *.bbl *.blg *.fdb* *.fls *.log *.synctex.gz *.out 
+
+report : reporte.pdf
 
 clean:      #el @find ... evita borrar el profiling-report.txt, pero borra el resto de .txtc
 	@find . -maxdepth 1 -type f -name '*.txt' ! -name 'profiling-report.txt' -delete

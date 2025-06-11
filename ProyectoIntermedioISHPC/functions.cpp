@@ -39,44 +39,42 @@ static int dfs(int id, int L, int etiqueta,
     if (id < 0 || id >= L * L) return 0;
     if (!malla[id] || etiquetas[id] != 0) return 0;
 
-    std::stack<int> pila;
-    pila.push(id);
-    etiquetas[id] = etiqueta;
+    std::stack<int> pila;   //crea una pila de enteros para evitar hacer llamados recursivos a dfs
+    pila.push(id);          //se añade la posición id de la malla a la pila
+    etiquetas[id] = etiqueta; //se le asigna una etiqueta
 
     int tamano = 0;
 
-    const int dx[4] = {-1, 1, 0, 0};
+    const int dx[4] = {-1, 1, 0, 0};  //se definen las direcciones de busqueda de vecinos
     const int dy[4] = {0, 0, -1, 1};
 
-    while (!pila.empty()) {
-        int actual = pila.top();
-        pila.pop();
+    while (!pila.empty()) {         //mientras la pila no esté vacía 
+        int actual = pila.top();      //se pasa el valor de id a actual
+        pila.pop();                   //se vacía el valor id de la pila
 
-        int i = fila(actual, L);
+        int i = fila(actual, L);        //con el valor actual se definen las coordenadas i y j
         int j = columna(actual, L);
 
-        tamano++;
+        tamano++;                       //aumentamos en 1 el tamaño
 
-        if (i == 0) toca_arriba = true;
-        if (i == L - 1) toca_abajo = true;
+        if (i == 0) toca_arriba = true;         //revisamos si i y j cumplen con condiciones de percolación
+        if (i == L - 1) toca_abajo = true;      //para actualizar el valor de los booleanos
         if (j == 0) toca_izquierda = true;
         if (j == L - 1) toca_derecha = true;
 
-        for (int dir = 0; dir < 4; ++dir) {
+        for (int dir = 0; dir < 4; ++dir) {     //ahora revisamos para cada uno de los cuatro vecinos
             int ni = i + dx[dir];
             int nj = j + dy[dir];
 
             if (ni >= 0 && ni < L && nj >= 0 && nj < L) {
                 int nid = index(ni, nj, L);
-                if (malla[nid] && etiquetas[nid] == 0) {
+                if (malla[nid] && etiquetas[nid] == 0) {  //si está ocupado en la malla y sin etiqueta
                     etiquetas[nid] = etiqueta;
-                    pila.push(nid);
+                    pila.push(nid);                     //y agregamos su valor a la pila de nuevo para repetir el ciclo
                 }
             }
         }
     }
-
-    return tamano;
 }
 
 bool hay_cluster_percolante(const std::vector<bool>& malla, int L, int& tamano_max, std::vector<int>& etiquetas, std::vector<int>& percolantes){
@@ -136,11 +134,11 @@ void imprimir_clusters(const std::vector<int>& etiquetas, const std::vector<bool
             if(!malla[id]){
                 malla_etiquetada << 0 << "\t";
             }
-            // Si el elemento de la malla pertenece a un cluster pero no es percolante, colocar 1 en la malla etiquetada
+            // Si el elemento de la malla pertenece a un cluster percolante, llenar con la etiqueta del cluster correspondiente
             else if(etiquetas[id] != 0 && es_percolante(percolantes, etiquetas[id])){
                 malla_etiquetada << etiquetas[id] << "\t";
             }
-            // Si el elemento de la malla pertenece a un cluster percolante, llenar con la etiqueta del cluster correspondiente
+            // Si el elemento de la malla pertenece a un cluster pero no es percolante, colocar 1 en la malla etiquetada
             else{
                 malla_etiquetada << 1 << "\t";
             }
